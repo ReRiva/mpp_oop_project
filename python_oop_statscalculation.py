@@ -1,31 +1,8 @@
-import csv
+
 import statistics as stat
 import numpy as np
 
-####### Need to make some adjustment to the code
-
-
-
-class Student:
-    def __init__(self, name, modules, scores):
-        self.name = name
-        self.modules = modules
-        self.scores = scores
-    def __repr__(self):
-        return f' Name: {self.name}, Modules: {self.modules}, Score: {self.scores}'
-
-
-class StudentStats:
-    def __init__(self, highest_grade, student_gpa, nearest_high_gpa, average_score, median, stdeviation, letter_grade):
-        self.highest_grade = highest_grade
-        self.student_gpa = student_gpa
-        self.nearest_high_gpa = nearest_high_gpa
-        self.average_score = average_score
-        self.median = median
-        self.stdeviation = stdeviation
-        self.letter_grade = letter_grade
-
-
+#Class holding a function that calculate the GPA and letter grade for each Module
 
 class GradeCalculator:
  
@@ -83,7 +60,12 @@ class GradeCalculator:
 
 
 
+
+
+
 class StatisticsCalculator:
+
+    # individual functions to calculate each one of the requested students stats
 
     def calculate_lowest_grade(modules, scores):
         lowest_score = min(scores)
@@ -124,72 +106,14 @@ class StatisticsCalculator:
         letter_grade, gpa = GradeCalculator.calculate_grade(average_score)
 
         print("-------------------------------")
-        print(name, "GPA is:", student_gpa, ",their highest scoring Module is:", highest_grade,
-              ",their lowest scoring Module is:", lowest_grade, ",their score standard deviation is", stdeviation,
-              ",the median value of their score is", median, ",how far from the next GPA tier",
-              nearest_high_gpa, "the letter grade is:", letter_grade, "\n")
+        print("Student name: ", name,"\n" 
+              "GPA:", student_gpa, "\n" 
+              "Highest Scoring Module:", highest_grade,"\n"
+              "Lowest Scoring Module:", lowest_grade,"\n"
+              "Score Standard Deviation: ", stdeviation,"\n"
+              "Score Median Value:", median,"\n" 
+              "Student is ",nearest_high_gpa,"points away from the next GPA tier","\n"
+              "Letter Grade is:", letter_grade, "\n")
         
 
 
-
-
-
-class Menu:
-
-    def read_from_file():
-        with open('MPPSample.csv') as file:
-            students = csv.reader(file)
-            header = next(students)  # Skipping the header
-            modules = header[1:]  # List of module names
-
-            for row in students:
-                name = row[0]
-                scores = list(map(int, row[1:]))
-                student = Student(name, modules, scores)
-                StatisticsCalculator.calculate_student_stats(student.name, student.modules, student.scores)
-
-    
-    def input_values():
-        students = {}
-
-        while True:
-            name = input("Enter student name (or 'quit' to exit): ")
-
-            if name.lower() == "quit":
-                break
-
-            module = input("Enter student module: ")
-            score = float(input("Enter student score: "))
-
-            if name in students:
-                students[name]["modules"].append(module)
-                students[name]["scores"].append(score)
-            else:
-                students[name] = {"modules": [module], "scores": [score]}
-
-        for name, data in students.items():
-            student = Student(name, data["modules"], data["scores"])
-            print(student)
-            StatisticsCalculator.calculate_student_stats(student.name, student.modules, student.scores)
-
-    def program_menu():
-        while True:
-            print("------ Main Menu ------")
-            print("1. Press '1' to read the student information from a file")
-            print("2. Press '2' to enter the student information manually")
-            print("3. Press '3' to Quit")
-
-            choice = input("Enter your choice (1-3): ")
-
-            if choice == "1":
-                Menu.read_from_file()
-            elif choice == "2":
-                Menu.input_values()
-            elif choice == "3":
-                print("Quitting the program...")
-                break
-            else:
-                print("Invalid choice. Please enter a valid option.")
-
-# Run the main menu
-Menu.program_menu()

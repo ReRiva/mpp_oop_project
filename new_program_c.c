@@ -10,54 +10,56 @@
     int count;
 };
 
-struct StudentStats{
-    char name[100];
-    float gpa;
-    char* highestGrade;
-    char* lowestGrade;
-    float standardDeviation;
-    float median;
-    float nearestHighGPA;
-    char* letterGrade;
-};
 
-void calculate_grade(float score, const char** letter_grade, float* gpa) {
+calculate_grade(float score, const char** letter_grade, float* gpa) {
     if (score >= 90 && score <= 100) {
         *letter_grade = "A+";
         *gpa = 4.2;
+        return *letter_grade, *gpa;
     } else if (score >= 85) {
         *letter_grade = "A";
         *gpa = 4.0;
+        return *letter_grade, *gpa;
     } else if (score >= 80) {
         *letter_grade = "A-";
         *gpa = 3.8;
+        return *letter_grade, *gpa;
     } else if (score >= 75) {
         *letter_grade = "B+";
         *gpa = 3.6;
+        return *letter_grade, *gpa;;
     } else if (score >= 70) {
         *letter_grade = "B";
         *gpa = 3.4;
+        return *letter_grade, *gpa;
     } else if (score >= 65) {
         *letter_grade = "B-";
         *gpa = 3.4;
+        return *letter_grade, *gpa;
     } else if (score >= 60) {
         *letter_grade = "C+";
         *gpa = 3.2;
+        return *letter_grade, *gpa;
     } else if (score >= 55) {
         *letter_grade = "C";
         *gpa = 3.0;
+        return *letter_grade, *gpa;
     } else if (score >= 50) {
         *letter_grade = "C-";
         *gpa = 2.8;
+        return *letter_grade, *gpa;
     } else if (score >= 45) {
         *letter_grade = "D+";
         *gpa = 2.6;
+        return *letter_grade, *gpa;
     } else if (score >= 40) {
         *letter_grade = "D";
         *gpa = 2.4;
+        return *letter_grade, *gpa;
     } else if (score >= 0 && score < 40) {
         *letter_grade = "F";
         *gpa = 0;
+        return *letter_grade, *gpa;
     } else {
         printf("Please check your file. Student grades must be between 0 and 100\n");
     }
@@ -69,8 +71,6 @@ void calculate_grade(float score, const char** letter_grade, float* gpa) {
 void student_stats(const char* studentname, float* student_grades, char** grades_name, int count, Student student) {
     
 
-    // Function to calculate student statistics
-    // ...
 
     // Lowest Score
     float lowest_score = student_grades[0];
@@ -228,12 +228,78 @@ void input_values() {
 //////// Set up the read from file funcction
 
 
+void read_from_file() {
+    
+    Student students[100];
+
+    int num_students = 0; // Number of students entered
+
+    while (1) {
+        char name[100];
+        printf("Enter student name (or 'quit' to exit): ");
+        scanf("%s", name);
+        
+        if (strcmp(name, "quit") == 0) {
+            break;
+        }
+
+        char module[100];
+        printf("Enter student module: ");
+        scanf("%s", module);
+
+        float score;
+        printf("Enter student score: ");
+        scanf("%f", &score);
+
+        // Check if student name already exists in the array
+        int existing_index = -1;
+        for (int i = 0; i < num_students; i++) {
+            if (strcmp(students[i].name, name) == 0) {
+                existing_index = i;
+                break;
+            }
+        }
+
+        if (existing_index != -1) {
+            // If the name exists, append the module and score to the existing lists
+            int count = students[existing_index].count;
+            students[existing_index].modules[count] = strdup(module);
+            students[existing_index].scores[count] = score;
+            students[existing_index].count++;
+        } else {
+            // If the name doesn't exist, create a new entry in the array
+            strcpy(students[num_students].name, name);
+            students[num_students].modules = (char**)malloc(sizeof(char*) * 100);
+            students[num_students].scores = (float*)malloc(sizeof(float) * 100);
+            students[num_students].modules[0] = strdup(module);
+            students[num_students].scores[0] = score;
+            students[num_students].count = 1;
+            num_students++;
+        }
+    }
+
+    // Process student statistics
+    for (int i = 0; i < num_students; i++) {
+        Student student = students[i];
+        student_stats(student.name, student.scores, student.modules, student.count, student);
+    }
+
+
+}
 
 
 
 
 
 
+
+
+
+
+
+
+
+////////////////////////////////////////////
 
 void program_menu() {
     char choice[2];

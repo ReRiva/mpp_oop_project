@@ -10,16 +10,7 @@
     int count;
 };
 
-struct StudentStats{
-    char name[100];
-    float gpa;
-    char* highestGrade;
-    char* lowestGrade;
-    float standardDeviation;
-    float median;
-    float nearestHighGPA;
-    char* letterGrade;
-};
+
 
 void calculate_grade(float score, const char** letter_grade, float* gpa) {
     if (score >= 90 && score <= 100) {
@@ -69,8 +60,6 @@ void calculate_grade(float score, const char** letter_grade, float* gpa) {
 void student_stats(const char* studentname, float* student_grades, char** grades_name, int count, Student student) {
     
 
-    // Function to calculate student statistics
-    // ...
 
     // Lowest Score
     float lowest_score = student_grades[0];
@@ -138,7 +127,7 @@ void student_stats(const char* studentname, float* student_grades, char** grades
     const float gpa_list[] = {0.0, 2.4, 2.6, 2.8, 3.0, 3.2, 3.4, 3.6, 3.8, 4.0, 4.2};
     float nearest_high_gpa = gpa_list[0];
     for (int i = 1; i < sizeof(gpa_list) / sizeof(gpa_list[0]); i++) {
-        if (gpa_list[i] >= student_gpa) {
+        if (gpa_list[i] > student_gpa) {
             nearest_high_gpa = gpa_list[i];
             break;
         }
@@ -147,11 +136,11 @@ void student_stats(const char* studentname, float* student_grades, char** grades
 
     // Printing the result with the student information
     printf("-------------------------------\n");
-    printf("%s GPA is: %.2f, their highest scoring Module is: %s, their lowest scoring Module is: %s\n",
+    printf("Student Name: %s\nGPA: %.2f\nHighest Scoring Module: %s\nLowest Scoring Module: %s\n",
            studentname, student_gpa, highest_grade, lowest_grade);
-    printf("Their score standard deviation is %.2f, the median value of their score is %.2f\n",
+    printf("Score Standard Deviation: %.2f\nScore Median Value: %.2f\n",
            stdeviation, median);
-    printf("How far from the next GPA tier: %.2f\n", nearest_high_gpa);
+    printf("Student is : %.2f points away from the next GPA tier\n", nearest_high_gpa);
 }
 
 
@@ -229,11 +218,80 @@ void input_values() {
 
 
 
+ 
+void read_from_file() {
+    FILE *file = fopen("MPPSample.csv", "r");
+
+    if (file == NULL) {
+        printf("Error opening the file.\n");
+        return;
+    }
+
+    Student students[100];
+    int num_students = 0; // Number of students entered
+
+    char name[100], module[100];
+    float score;
+
+    while (fscanf(file, "%s %s %f", name, module, &score) == 3) {
+        // Check if student name already exists in the array
+        int existing_index = -1;
+        for (int i = 0; i < num_students; i++) {
+            if (strcmp(students[i].name, name) == 0) {
+                existing_index = i;
+                break;
+            }
+        }
+
+        if (existing_index != -1) {
+            // If the name exists, append the module and score to the existing lists
+            int count = students[existing_index].count;
+            students[existing_index].modules[count] = strdup(module);
+            students[existing_index].scores[count] = score;
+            students[existing_index].count++;
+        } else {
+            // If the name doesn't exist, create a new entry in the array
+            strcpy(students[num_students].name, name);
+            students[num_students].modules = (char**)malloc(sizeof(char*) * 100);
+            students[num_students].scores = (float*)malloc(sizeof(float) * 100);
+            students[num_students].modules[0] = strdup(module);
+            students[num_students].scores[0] = score;
+            students[num_students].count = 1;
+            num_students++;
+        }
+    }
+
+    // Process student statistics
+    for (int i = 0; i < num_students; i++) {
+        Student student = students[i];
+        student_stats(student.name, student.scores, student.modules, student.count, student);
+    }
+
+    // Free dynamically allocated memory
+    for (int i = 0; i < num_students; i++) {
+        for (int j = 0; j < students[i].count; j++) {
+            free(students[i].modules[j]);
+        }
+        free(students[i].modules);
+        free(students[i].scores);
+    }
+}
 
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+////////////////////////////////////////////
 
 void program_menu() {
     char choice[2];
@@ -247,7 +305,7 @@ void program_menu() {
         scanf("%1s", choice);
 
         if (strcmp(choice, "1") == 0) {
-            printf("1111111111");
+            read_from_file();
         } else if (strcmp(choice, "2") == 0) {
             input_values();
         } else if (strcmp(choice, "3") == 0) {
