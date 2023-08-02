@@ -135,12 +135,12 @@ void student_stats(const char* studentname, float* student_grades, char** grades
     nearest_high_gpa -= student_gpa;
 
     // Printing the result with the student information
-    printf("-------------------------------\n");
-    printf("Student Name: %s\nGPA: %.2f\nHighest Scoring Module: %s\nLowest Scoring Module: %s\n",
+    printf("\n-------------------------------\n");
+    printf("\nStudent Name: %s\nGPA: %.2f\nHighest Scoring Module: %s\nLowest Scoring Module: %s\n",
            studentname, student_gpa, highest_grade, lowest_grade);
     printf("Score Standard Deviation: %.2f\nScore Median Value: %.2f\n",
            stdeviation, median);
-    printf("Student is : %.2f points away from the next GPA tier\n", nearest_high_gpa);
+    printf("Student is : %.2f points away from the next GPA tier\n\n", nearest_high_gpa);
 }
 
 
@@ -233,7 +233,7 @@ void read_from_file() {
     char name[100], module[100];
     float score;
 
-    while (fscanf(file, "%s %s %f", name, module, &score) == 3) {
+    while (fscanf(file, "%99s %99s %f", name, module, &score) == 3) {
         // Check if student name already exists in the array
         int existing_index = -1;
         for (int i = 0; i < num_students; i++) {
@@ -261,13 +261,16 @@ void read_from_file() {
         }
     }
 
+    // Close the file after reading
+    fclose(file);
+
     // Process student statistics
     for (int i = 0; i < num_students; i++) {
         Student student = students[i];
         student_stats(student.name, student.scores, student.modules, student.count, student);
     }
 
-    // Free dynamically allocated memory
+    // Free allocated memory for module strings and student structures
     for (int i = 0; i < num_students; i++) {
         for (int j = 0; j < students[i].count; j++) {
             free(students[i].modules[j]);
@@ -312,7 +315,7 @@ void program_menu() {
             printf("Quitting the program...\n");
             break;
         } else {
-            printf("Invalid choice. Please enter a valid option.\n");
+            printf("\n\nInvalid choice. Please enter a valid option.\n\n");
         }
     }
 }
