@@ -27,27 +27,27 @@ def calculate_grade(score):
         return letter_grade, gpa
     elif score >= 65:
         letter_grade = "B-"
-        gpa = 3.4
+        gpa = 3.2
         return letter_grade, gpa
     elif score >= 60:
         letter_grade = "C+"
-        gpa = 3.2
+        gpa = 3.0
         return letter_grade, gpa
     elif score >= 55:
         letter_grade = "C"
-        gpa = 3.0
+        gpa = 2.8
         return letter_grade, gpa
     elif score >= 50:
         letter_grade = "C-"
-        gpa = 2.8
+        gpa = 2.6
         return letter_grade, gpa
     elif score >= 45:
         letter_grade = "D+"
-        gpa = 2.6
+        gpa = 2.4
         return letter_grade, gpa
     elif score >= 40:
         letter_grade = "D"
-        gpa = 2.4
+        gpa = 2.2
         return letter_grade, gpa
     elif score >= 0 and score < 40:
         letter_grade = "F"
@@ -58,7 +58,7 @@ def calculate_grade(score):
 
 
         
-#Function to calculate the students statistics, such as GAP, Lowest grade, score, Grade, etc
+#Function to calculate the students statistics, such as GPA, Lowest grade, score, Grade, etc
 
 
 def student_stats(studentname, student_grades, grades_name):
@@ -70,11 +70,16 @@ def student_stats(studentname, student_grades, grades_name):
      #Highest Score
      highest_score = max(student_grades)
      highest_grade  = grades_name[(student_grades.index(highest_score))]
-     
+    
+     # Letter Grade
+     average_score = int(sum(student_grades) / len(student_grades))
+     letter_grade, _ = calculate_grade(average_score)
+
+
      # Getting the Individual GPA per Module and calculating the average GPA 
      students_gpas= []
      for grades in student_grades:
-         letter_grade, individual_gpa = calculate_grade(grades)
+         _, individual_gpa = calculate_grade(grades)
          students_gpas.append(individual_gpa)
 
      student_gpa = round(float(sum(students_gpas)/len(students_gpas)), 2)
@@ -90,11 +95,10 @@ def student_stats(studentname, student_grades, grades_name):
 
      # Finding the how far their gpa is from the nearest high tier.
      
-     gpa_list = [0, 2.4, 2.6, 2.8, 3.0, 3.2, 3.4, 3.6, 3.8, 4.0, 4.2]
+     gpa_list = [0, 2.2, 2.4, 2.6, 2.8, 3.0, 3.2, 3.4, 3.6, 3.8, 4.0, 4.2]
 
-     ############################### Help from internet
      def find_next_higher_gpa(gpa_list, gpa):
-         gpa_list = [0, 2.4, 2.6, 2.8, 3.0, 3.2, 3.4, 3.6, 3.8, 4.0, 4.2]
+         gpa_list = [0, 2.2, 2.4, 2.6, 2.8, 3.0, 3.2, 3.4, 3.6, 3.8, 4.0, 4.2]
          next_higher = min([x for x in gpa_list if x >= gpa])
          return next_higher
 
@@ -122,6 +126,9 @@ def read_from_file():
     
     
     with open('MPPSample.csv') as file:
+    #with open('MPPSample-scores.csv') as file:
+    #with open('MPPSample-noModuleNames.csv') as file:
+    #with open('MPPSample-missingStudentsNames.csv') as file:     
         students = csv.reader(file)
         
         # Escaping the header
@@ -132,7 +139,7 @@ def read_from_file():
             studentname = row[0]
             
             # Error handling for empty student name
-            if studentname.isspace():
+            if not studentname or studentname.isspace():
                 print("Student name cannot be empty. Returning to Main Menu")
                 program_menu()
             

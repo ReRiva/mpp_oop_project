@@ -1,23 +1,66 @@
 # Importing the CSV module to read the CSV file
 import csv
 
-# Importing the file containing the Classes and functions to calculate the student statistics. 
-from python_oop_statscalculation import StatisticsCalculator
-
+# Importing the file containing the Classes and methods to calculate the student statistics. 
+from python_statscalculation_final import StatisticsCalculator
+import statistics as stat
+import numpy as np
 
 # Student class containing the students data received by input from user or by file
 
 class Student:
-    def __init__(self, name, modules, scores):
+    def __init__(self, name, modules, scores ):
         self.name = name
         self.modules = modules
         self.scores = scores
+
     def __repr__(self):
-        return f' Name: {self.name}, Modules: {self.modules}, Score: {self.scores}'
+        return f"Student(name='{self.name}', modules={self.modules}, scores={self.scores})"
+
+
+# Class containing the Students Statistics data and data inherited from the Student Class
+
+class StudentStats(Student):    
+    def __init__(self, name, modules, scores, lowest_grade, highest_grade, gpa, nearest_high_gpa, median, stdeviation, letter_grade, average_score):
+        super().__init__(name, modules, scores)
+
+        self.lowest_grade = lowest_grade
+        self.highest_grade = highest_grade
+        self.gpa = gpa
+        self.nearest_high_gpa = nearest_high_gpa
+        self.median = median
+        self.stdeviation = stdeviation
+        self.letter_grade = letter_grade
+        self.average_score = average_score
+
+    # Method to organize and call the methods responsible for the calculation of all students statistics
+    # The methods tha do the calculation are on the file 
+
+    def calculate_student_stats(self):    
+        lowest_grade = StatisticsCalculator.calculate_lowest_grade(self.modules, self.scores)
+        highest_grade = StatisticsCalculator.calculate_highest_grade(self.modules, self.scores)
+        average_score = int(sum(self.scores) / len(self.scores))
+        average_gpa = StatisticsCalculator.calculate_student_gpa(self.scores)
+        nearest_high_gpa = StatisticsCalculator.calculate_nearest_high_gpa(average_gpa)
+        median = stat.median(self.scores)
+        stdeviation = round(np.std(self.scores), 2)
+        letter_grade, _ = StatisticsCalculator.calculate_grade(average_score)
+        return StudentStats(self.name, self.modules, self.scores, lowest_grade, highest_grade, average_gpa, nearest_high_gpa, median, stdeviation, letter_grade, average_score)
+    
+
+    def __repr__(self):
+        return f"\nStudent name: {self.name}\n GPA: {self.gpa}\n Highest Scoring Module: {self.highest_grade}\n Lowest Scoring Module: {self.lowest_grade}\n Score Standard Deviation: {self.stdeviation}\n Score Median Value: {self.median}\n Student is {self.nearest_high_gpa} points away from the next GPA tier\n Letter Grade is: {self.letter_grade}\n"
+        
 
 
 
-# Ckass containing both function to receive the student data
+
+
+
+
+
+
+# Class containing both function to receive the student data
 
 class DataInput:
 
@@ -26,8 +69,10 @@ class DataInput:
     # For each student it creates a instance of the student class with their scores, modules and name
 
     def read_from_file():
-        with open('MPPSample.csv') as file:
+        with open('MPPSample-nonames.csv') as file:
         #with open('MPPSample-scores.csv') as file:
+        #with open('MPPSample-noModuleNames.csv') as file:
+        #with open('MPPSample-missingStudentsNames.csv') as file:
             students = csv.reader(file)
             
             # Escaping the header
@@ -38,7 +83,7 @@ class DataInput:
                 studentname = row[0]
                 
                 # Error handling for empty student name
-                if studentname.isspace():
+                if not studentname or studentname.isspace():
                     print("Student name cannot be empty. Returning to Main Menu")
                     Menu.program_menu()
                 
@@ -63,7 +108,9 @@ class DataInput:
                     print(f"Error: Some modules have blank names.")
                     Menu.program_menu()
                 student = Student(studentname, grades_name, student_grades)
-                StatisticsCalculator.calculate_student_stats(student.name, student.modules, student.scores)
+                student_stats = StudentStats.calculate_student_stats(student)
+                print(repr(student_stats))
+
 
         
 
@@ -129,7 +176,9 @@ class DataInput:
 
             for name, data in students.items():
                 student = Student(name, data["modules"], data["scores"])
-                StatisticsCalculator.calculate_student_stats(student.name, student.modules, student.scores)
+                StudentStats.calculate_student_stats(student)
+                student_stats = StudentStats.calculate_student_stats(student)
+                print(repr(student_stats))
 
 
 class Menu:
@@ -157,4 +206,3 @@ class Menu:
 
 # Run the main menu
 Menu.program_menu()
-#print(Student)

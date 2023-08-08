@@ -128,7 +128,7 @@ void student_stats(const char* studentname, float* student_grades, char** grades
     float nearest_high_gpa = gpa_list[0];
     for (int i = 1; i < sizeof(gpa_list) / sizeof(gpa_list[0]); i++) {
         if (gpa_list[i] > student_gpa) {
-            nearest_high_gpa = gpa_list[i];
+            nearest_high_gpa = gpa_list[i];        
             break;
         }
     }
@@ -153,7 +153,7 @@ void student_stats(const char* studentname, float* student_grades, char** grades
 
 void input_values() {
     
-    Student students[100];
+    struct Student students[100];
 
     int num_students = 0; // Number of students entered
 
@@ -227,7 +227,7 @@ void read_from_file() {
         return;
     }
 
-    Student students[100];
+    struct Student students[100];
     int num_students = 0; // Number of students entered
 
     char name[100], module[100];
@@ -266,7 +266,7 @@ void read_from_file() {
 
     // Process student statistics
     for (int i = 0; i < num_students; i++) {
-        Student student = students[i];
+        struct Student student = students[i];
         student_stats(student.name, student.scores, student.modules, student.count, student);
     }
 
